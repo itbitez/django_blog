@@ -1,0 +1,138 @@
+{% extends "blog/base.html" %}
+{% block content %}
+
+{% load static %}
+
+<section class="hero-carousel">
+    <div class="container-xl">
+        <div class="post-carousel-lg">
+            <!-- Loop through the latest posts -->
+            {% for post in latest_posts %}
+            <!-- post -->
+            <div class="post featured-post-xl">
+                <div class="details clearfix">
+                    <a href="{% url 'category-detail' slug=post.category_name.slug %}" class="category-badge lg">
+                        {{ post.category_name.name }}
+                    </a>
+                    <h4 class="post-title">
+                        <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+                    </h4>
+                    <ul class="meta list-inline mb-0">
+                        <li class="list-inline-item">
+                            {{ post.author }}
+                        </li>
+                        <li class="list-inline-item">
+                            {{ post.date_posted|date:"d M Y" }}
+                        </li>
+                    </ul>
+                </div>
+                <a href="{{ post.get_absolute_url }}">
+                    <div class="thumb rounded">
+                        <div class="inner data-bg-image" data-bg-image="{{ post.image.url }}"></div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+
+<!-- section main content -->
+<section class="main-content">
+    <div class="container-xl">
+
+        <div class="row gy-4">
+
+            <div class="col-lg-8">
+
+                <!-- post -->
+                 {% for i in posts  %}
+                <div class="post post-classic rounded bordered">
+                    <div class="thumb top-rounded">
+                        <a href="{% url 'category-detail' slug=i.category_name.slug %}" class="category-badge lg position-absolute">{{i.category_name}}</a>
+                        <span class="post-format">
+                            <i class="icon-picture"></i>
+                        </span>
+                        <a href="{{i.get_absolute_url}}">
+                            <div class="inner">
+                                <img src="{{i.image.url}}" alt="post-title" />
+                            </div>
+                        </a>
+                    </div>
+                    <div class="details">
+                        <ul class="meta list-inline mb-0">
+                            <li class="list-inline-item"><img src="{{ i.author.profile.avatar.url }}" style="max-width: 30px;" class="author" alt="author"/>{{i.author}}</li>
+                            <li class="list-inline-item">{{i.date_posted}}</li>
+                        </ul>
+                        <h5 class="post-title mb-3 mt-3"><a href="{{i.get_absolute_url}}">{{i.title}}</a></h5>
+                        <p class="excerpt mb-0">{{i.excerpt}}</p>
+                    </div>
+                    <div class="post-bottom clearfix d-flex align-items-center">
+                        <div class="social-share me-auto">
+                            <button class="toggle-button icon-share"></button>
+                            <ul class="meta list-inline mb-0">
+                                <li class="list-inline-item"><i class="icon-bubble"></i> (0)</li>
+                            </ul>
+                        </div>
+                        <div class="float-end d-none d-md-block">
+                            <a href="{{i.get_absolute_url}}" class="more-link">Continue Reading<i class="icon-arrow-right"></i></a>
+                        </div>
+                        <div class="more-button d-block d-md-none float-end">
+                            <a href="{{i.get_absolute_url}}"><span class="icon-options"></span></a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+                {% if paginator.num_pages > 1 %}
+                <nav>
+                    <ul class="pagination justify-content-center">
+                        <!-- Previous Page Link -->
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link" aria-hidden="true">&laquo;</span>
+                            </li>
+                        {% endif %}
+
+                        <!-- Page Number Links -->
+                        {% for num in paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        <!-- Next Page Link -->
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link" aria-hidden="true">&raquo;</span>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+
+
+            </div>
+            
+
+
+{% endblock %}

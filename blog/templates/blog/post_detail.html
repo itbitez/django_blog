@@ -1,0 +1,159 @@
+{% extends "blog/base.html" %}
+{% load static %}
+{% block content %}
+<!-- section main content -->
+<section class="main-content mt-3">
+    <div class="container-xl">
+
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url "blog-home" %}">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">>> <span style="width: 5px;"></span> {{post.title}}</li>
+            </ol>
+        </nav>
+
+        <style>
+            .breadcrumb-item + .breadcrumb-item::before{
+                display: none;
+            }
+        </style>
+
+        <div class="row gy-4">
+
+            <div class="col-lg-8">
+                <!-- post single -->
+                <div class="post post-single">
+                    <!-- post header -->
+                    <div class="post-header">
+                        <h1 class="title mt-0 mb-3">{{post.title}}</h1>
+                        <ul class="meta list-inline mb-0">
+                            <li class="list-inline-item">><img src="{{post.author.profile.avatar.url}}" style="max-width: 30px;" class="author" alt="author"/>{{post.author}}</li>
+                            <li class="list-inline-item">{{post.category_name}}</li>
+                            <li class="list-inline-item">{{post.date_posted}}</li>
+                        </ul>
+                    </div>
+                    <!-- featured image -->
+                    <div class="featured-image">
+                        <img src="{{post.image.url}}" alt="{{post.title}}" />
+                    </div>
+                    <!-- post content -->
+                    <div class="post-content clearfix">
+                        {{post.content | safe}}
+                    </div>
+                    <!-- post bottom section -->
+
+                </div>
+
+                <div class="spacer" data-height="50"></div>
+
+                <div class="about-author padding-30 rounded">
+                    <div class="thumb">
+                        <img src="{{post.author.profile.avatar.url}}" alt="{{post.author}}" />
+                    </div>
+                    <div class="details">
+                        <h4 class="name">{{post.author}}</h4>
+                        {{post.author.profile.user_info}}
+                        <!-- social icons -->
+                    </div>
+                </div>
+
+                <div class="spacer" data-height="50"></div>
+
+                <!-- section header -->
+                <div class="section-header">
+                    <h3 class="section-title">Comments ({{ total_comments }})</h3>
+                    <img src="{% static "images/wave.svg" %}" class="wave" alt="wave" />
+                </div>
+                <!-- post comments -->
+                <div class="comments bordered padding-30 rounded">
+
+                    <ul class="comments">
+                        {% for comment in comments %}
+                            <li class="comment rounded">
+                                <div class="thumb">
+                                    <!-- Display default avatar or custom avatar if available -->
+                                    <img src="{% static 'images/other/comment-1.png' %}" alt="{{ comment.name }}" />
+                                </div>
+                                <div class="details">
+                                    <h4 class="name">{{ comment.name }}</h4>
+                                    <span class="date">{{ comment.date_posted|date:"M d, Y H:i a" }}</span>
+                                    <p>{{ comment.content }}</p>
+                                    <a href="#" class="btn btn-default btn-sm reply" data-comment-id="{{ comment.id }}">Reply</a>
+                                </div>
+                            </li>
+                            
+                            <!-- Loop through each reply if available -->
+                            {% for reply in comment.replies.all %}
+                                <li class="comment child rounded">
+                                    <div class="thumb">
+                                        <img src="{% static 'images/other/comment-2.png' %}" alt="{{ reply.name }}" />
+                                    </div>
+                                    <div class="details">
+                                        <h4 class="name">{{ reply.name }}</h4>
+                                        <span class="date">{{ reply.date_posted|date:"M d, Y H:i a" }}</span>
+                                        <p>{{ reply.content }}</p>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="spacer" data-height="50"></div>
+
+                <!-- section header -->
+                <div class="section-header">
+                    <h3 class="section-title">Leave Comment</h3>
+                    <img src="{% static "images/wave.svg" %}" class="wave" alt="wave" />
+                </div>
+                <!-- Comment Form Section -->
+                <div class="comment-form rounded bordered padding-30">
+                    <form id="comment-form" class="comment-form" method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <!-- Name Input -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ comment_form.name }}
+                                </div>
+                            </div>
+                            <!-- Email Input -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ comment_form.email }}
+                                </div>
+                            </div>
+                            <!-- Comment Textarea -->
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    {{ comment_form.content }}
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" name="submit" id="submit" value="Submit" class="btn btn-default">Submit</button><!-- Submit Button -->
+                    </form>
+                </div>
+            </div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const replyLinks = document.querySelectorAll('.reply');
+        replyLinks.forEach(link => {
+            link.addEventListener('click', function(event) {
+                event.preventDefault();
+                const commentId = this.getAttribute('data-comment-id');
+                const parentInput = document.createElement('input');
+                parentInput.setAttribute('type', 'hidden');
+                parentInput.setAttribute('name', 'parent_id');
+                parentInput.setAttribute('value', commentId);
+                const form = document.querySelector('form');
+                form.appendChild(parentInput);
+                form.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    });
+    </script>
+
+
+{% endblock %}
