@@ -6,5 +6,5 @@ urlpatterns = [
     path('post/<slug:slug>/', views.post_detail, name='post-detail'),
     path('ckeditor/', include('ckeditor_uploader.urls')),
     path('category/<slug:slug>/', views.category_detail, name='category-detail'),
-    path('search/', views.search, name='search'),  # Add this line for search
+    path('search/', views.search, name='search'), 
 ]

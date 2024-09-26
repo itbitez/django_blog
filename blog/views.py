@@ -15,10 +15,8 @@ class PostListView(ListView):
     paginate_by = 10
 
     def get_context_data(self, **kwargs):
-        # Call the base implementation to get the existing context
         context = super().get_context_data(**kwargs)
         
-        # Add latest 5 posts to the context
         context['latest_posts'] = Post.objects.order_by('-date_posted')[:5]
         context['categories_with_post_count'] = PostCategory.objects.all().annotate(post_count=Count('posts'))
         context['categories'] = PostCategory.objects.all()
@@ -30,7 +28,7 @@ def search(request):
     results = []
 
     if query:
-        results = Post.objects.filter(title__icontains=query)  # You can add more fields to search within.
+        results = Post.objects.filter(title__icontains=query)
 
     context = {
         'query': query,
@@ -43,19 +41,17 @@ def category_detail(request, slug):
     category = get_object_or_404(PostCategory, slug=slug)
     posts = Post.objects.filter(category_name=category)
 
-    # Pagination logic
     paginator = Paginator(posts, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
     context = {
         'category': category,
-        'posts': page_obj,  # Use page_obj instead of posts
+        'posts': page_obj, 
     }
     return render(request, 'blog/category_detail.html', context)
 
 
-# Single post detail view
 def post_detail(request, slug):
     post = get_object_or_404(Post, slug=slug)
     comments = post.comments.filter(parent=None)
@@ -71,7 +67,7 @@ def post_detail(request, slug):
             if parent_id:
                 new_comment.parent = Comment.objects.get(id=parent_id)
             new_comment.save()
-            return redirect('post-detail', slug=post.slug)  # Redirect to the post detail page
+            return redirect('post-detail', slug=post.slug)
     else:
         comment_form = CommentForm()
 

@@ -14,7 +14,6 @@ class Profile(models.Model):
     def __str__(self):
         return f'{self.user.username} Profile'
 
-    # Optional: Resize the uploaded image
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
@@ -51,7 +50,7 @@ class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
-        if not self.slug:  # Only generate slug if it's not already set
+        if not self.slug: 
             self.slug = slugify(self.title)
         super().save(*args, **kwargs)
 
@@ -62,12 +61,12 @@ class Post(models.Model):
         return reverse('post-detail', kwargs={'slug': self.slug})
     
 class Comment(models.Model):
-    post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)  # Link to the Post model
+    post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     email = models.EmailField()
     content = models.TextField()
-    date_posted = models.DateTimeField(default=timezone.now)  # Store the date and time of the comment
-    parent = models.ForeignKey('self', null=True, blank=True, related_name='replies', on_delete=models.CASCADE)  # For replies
+    date_posted = models.DateTimeField(default=timezone.now) 
+    parent = models.ForeignKey('self', null=True, blank=True, related_name='replies', on_delete=models.CASCADE)
 
     def __str__(self):
         return f"Comment by {self.name} on {self.post}"
